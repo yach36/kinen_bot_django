@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: docker/app/Dockerfile
+    container_name: kinen_bot_python
+    hostname: app
+    volumes:
+      - ../:/app
+    depends_on:
+      - db
+    tty: true
+    stdin_open: true
+    networks:
+      - kinen_bot_network
+  db:
+    build:
+      context: mysql/
+      dockerfile: Dockerfile
+      args:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+    container_name: kinen_bot_db
+    hostname: db
+    volumes:
+      - kinen_bot_volume:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - kinen_bot_network
+
+volumes:
+  kinen_bot_volume:
+    name: kinen_bot_volume
+
+networks:
+  kinen_bot_network:
+    name: kinen_bot_network
